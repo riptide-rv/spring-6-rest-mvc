@@ -1,4 +1,4 @@
-package com.example.spring6restmvc;
+package com.example.spring6restmvc.controllers;
 
 import com.example.spring6restmvc.model.Beer;
 import com.example.spring6restmvc.services.BeerService;
