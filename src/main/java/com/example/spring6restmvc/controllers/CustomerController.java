@@ -33,6 +33,17 @@ public class CustomerController {
         headers.add("Location","/api/v1/customer"+savedCustomer.getId());
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
+    @PutMapping("{customerid}")
+    public ResponseEntity updateById(@PathVariable("customerid") UUID customerid,@RequestBody Customer customer){
+        Customer updatedCustomer = customerService.updateById(customerid,customer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+
+    }
+    @DeleteMapping("{customerid}")
+    public ResponseEntity deleteById(@PathVariable("customerid") UUID customerid){
+        customerService.deleteById(customerid);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 
 
 }
