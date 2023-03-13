@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -30,9 +31,9 @@ public class BeerController {
         return beerService.listBeers();
     }
 
-    @RequestMapping("{beerID}")
+    @GetMapping("{beerID}")
     public Beer getBeerById(@PathVariable("beerID") UUID id){
-        return beerService.getBeerById(id);
+        return beerService.getBeerById(id).orElseThrow(NotFoundException::new);
     }
     @PutMapping("{beerid}")
     public ResponseEntity updateById(@PathVariable("beerid") UUID beerID,@RequestBody Beer beer){
@@ -40,6 +41,9 @@ public class BeerController {
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
+
+
+
     @DeleteMapping("{beerid}")
     public ResponseEntity deleteById(@PathVariable("beerid") UUID beerid){
         beerService.deleteById(beerid);

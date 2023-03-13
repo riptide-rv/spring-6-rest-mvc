@@ -13,6 +13,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.net.URL;
+import java.util.Optional;
+import java.util.UUID;
+
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -24,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CustomerController.class)
 class CustomerControllerTest {
+    public final String CUSTOMER_PATH = "/api/v1/customer/{customerID}";
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -54,7 +59,7 @@ class CustomerControllerTest {
     @Test
     void getCustomerById() throws Exception {
         Customer testCustomer = customerServiceImpl.listCustomers().get(0);
-        given(customerService.getCustomerById(testCustomer.getId())).willReturn(testCustomer);
+        given(customerService.getCustomerById(testCustomer.getId())).willReturn(Optional.of(testCustomer));
         mockMvc.perform(get("/api/v1/customer/"+testCustomer.getId().toString()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -68,5 +73,12 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()",is(customerServiceImpl.listCustomers().size())));
+    }
+
+    @Test
+    void customerByIdNotFound() throws Exception {
+        given(customerService.getCustomerById(any(UUID.class))).willReturn(Optional.empty());
+        mockMvc.perform(get(CUSTOMER_PATH, UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }

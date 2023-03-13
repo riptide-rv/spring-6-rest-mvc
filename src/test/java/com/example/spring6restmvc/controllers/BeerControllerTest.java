@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 
@@ -67,13 +69,20 @@ class BeerControllerTest {
     @Test
     void getBeerById() throws Exception {
         Beer testBeer = beerServiceImpl.listBeers().get(0);
-        given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
+        given(beerService.getBeerById(testBeer.getId())).willReturn(Optional.of(testBeer));
 
         mockMvc.perform(get("/api/v1/beer/"+ testBeer.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id",is(testBeer.getId().toString())));
+
+    }
+    @Test
+    void excpHandling() throws Exception {
+        given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.empty());
+        mockMvc.perform(get("/api/v1/beer/"+UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
 
     }
 }

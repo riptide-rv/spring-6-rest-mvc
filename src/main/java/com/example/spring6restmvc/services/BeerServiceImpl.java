@@ -1,5 +1,6 @@
 package com.example.spring6restmvc.services;
 
+import com.example.spring6restmvc.controllers.NotFoundException;
 import com.example.spring6restmvc.model.Beer;
 import com.example.spring6restmvc.model.BeerStyle;
 import org.springframework.expression.spel.ast.BeanReference;
@@ -78,7 +79,7 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public Beer updateById(UUID beerID, Beer beer) {
-        Beer existingBeer = getBeerById(beerID);
+        Beer existingBeer = getBeerById(beerID).orElse(Beer.builder().id(UUID.randomUUID()).build());
         existingBeer.setBeerName(beer.getBeerName());
         existingBeer.setBeerStyle(beer.getBeerStyle());
         existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
@@ -94,7 +95,7 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public Beer getBeerById(UUID id) {
-        return beerMap.get(id);
+    public Optional<Beer> getBeerById(UUID id) {
+        return Optional.of(beerMap.get(id));
     }
 }
